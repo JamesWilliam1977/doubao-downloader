@@ -7,64 +7,51 @@ import { toast } from "sonner";
 import downloadImagesAsZip from "./utils/download";
 import { DownloadProgress } from "./components/DownloadProgress";
 import { checkVersion } from "./utils/check-version";
-
-const DOWNLOADED_IMAGES_KEY = "doubao-downloaded-images";
+import { db } from "./utils/db";
+import { useLiveQuery } from "dexie-react-hooks";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<string[]>([]);
-  const [downloadedImages, setDownloadedImages] = useState<Set<string>>(
-    new Set()
-  );
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState({
     current: 0,
     total: 0,
   });
 
-  // 从 localStorage 加载已下载的图片记录
+  // 获取已下载的图片记录
+  const downloaded = new Set(useLiveQuery(() => db.downloaded.toArray(), [])?.map(
+    (item) => item.url
+  ));
+
+
   useEffect(() => {
     try {
       // 检查新版本
       checkVersion();
-      const saved = localStorage.getItem(DOWNLOADED_IMAGES_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setDownloadedImages(new Set(parsed));
-      }
     } catch (error) {
-      console.error("加载已下载图片记录失败:", error);
+      console.error("检查新版本异常:", error);
     }
   }, []);
 
-  // 保存已下载的图片记录到 localStorage
+  // 保存已下载的图片记录
   const saveDownloadedImages = (urls: string[]) => {
-    const newDownloaded = new Set([...downloadedImages, ...urls]);
-    setDownloadedImages(newDownloaded);
-    try {
-      localStorage.setItem(
-        DOWNLOADED_IMAGES_KEY,
-        JSON.stringify([...newDownloaded])
-      );
-    } catch (error) {
+    db.downloaded.bulkAdd(urls.map((url) => ({ url }))).catch((error) => {
       console.error("保存已下载图片记录失败:", error);
-    }
+      toast.error("保存已下载图片记录失败", {
+        description: error instanceof Error ? error.message : "未知错误",
+      });
+    });
   };
 
   // 重置已下载的图片记录
   const resetDownloadedImages = () => {
-    setDownloadedImages(new Set());
-    try {
-      localStorage.removeItem(DOWNLOADED_IMAGES_KEY);
-      toast.success("重置成功", {
-        description: "已清除所有下载记录",
+    db.downloaded.clear().catch((error) => {
+      console.error("重置已下载图片记录失败:", error);
+      toast.error("重置已下载图片记录失败", {
+        description: error instanceof Error ? error.message : "未知错误",
       });
-    } catch (error) {
-      console.error("重置下载记录失败:", error);
-      toast.error("重置失败", {
-        description: "清除下载记录时出错",
-      });
-    }
+    });
   };
 
   const download = async (urls: string[]) => {
@@ -129,7 +116,7 @@ function App() {
       <Indicator onClick={() => setIsOpen(!isOpen)} />
       <Home
         urls={images}
-        downloadedImages={downloadedImages}
+        downloadedImages={downloaded}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onDownload={download}
@@ -138,7 +125,9 @@ function App() {
       ></Home>
       <Toaster />
       {isDownloading && (
-        <DownloadProgress text={`正在下载... ${downloadProgress.current}/${downloadProgress.total}`} />
+        <DownloadProgress
+          text={`正在下载... ${downloadProgress.current}/${downloadProgress.total}`}
+        />
       )}
     </div>
   );

@@ -61,7 +61,7 @@ export const Home = (props: HomeProps) => {
     <div className={`dd-home ${props.isOpen ? "show" : ""}`}>
       <div
         onClick={props.onClose}
-        className="dd-mask absolute opacity-50 top-0 h-full w-full inset-0 bg-black z-[88888]"
+        className="dd-mask absolute opacity-50 top-0 h-full w-full inset-0 bg-black z-88888"
       />
       <div className="dd-home-content w-[80vw] h-[70vh] lg:w-[800px] lg:h-[600px]">
         <div className="dd-action-btns">
