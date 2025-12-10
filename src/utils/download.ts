@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
     "https://jimmywarting.github.io/StreamSaver.js/mitm.html?version=2.0.0";
 }
 
-const getSetting = async (key: string): Promise<string | null> => {
+const getSetting = async (key: string): Promise<any> => {
   const setting = await db.setting.where("key").equals(key).first();
   return setting?.value || null;
 };
@@ -74,22 +74,20 @@ const createZipStreamWithZipStreamLib = async (
 
   const zipReadableStream = createZipWriter({
     async start(zipWriter) {
-      
       const concurrency = 5;
       const limit = pLimit(concurrency);
 
       const downloadPromises = imageUrls.map((url) =>
         limit(async () => {
           try {
-            
             const blob = await downloadImage(url);
             let fileName = getFileNameFromUrl(url);
-            // downloadOrder为true时添加index-前缀
-            downloadOrder === "true"
-              ? `index-${imageUrls.indexOf(url) + 1}-${fileName}`
+            fileName = downloadOrder
+              ? `${imageUrls.indexOf(url) + 1}-${fileName}`
               : fileName;
             return { url, fileName, blob, success: true as const };
           } catch (error) {
+            console.error(`下载图片 ${url} 失败:`, error);
             onError(url, error as Error);
             return { url, fileName: "", blob: null, success: false as const };
           }
@@ -102,12 +100,17 @@ const createZipStreamWithZipStreamLib = async (
         if (result.success && result.blob) {
           const imageStream = result.blob.stream();
 
-          zipWriter.enqueue({
-            name: result.fileName,
-            lastModified: Date.now(),
-            directory: false,
-            stream: () => imageStream,
-          });
+          try {
+            zipWriter.enqueue({
+              name: result.fileName,
+              lastModified: Date.now(),
+              directory: false,
+              stream: () => imageStream,
+            });
+          } catch (error) {
+            console.error("添加文件到ZIP失败:", error);
+            onError(result.url, error as Error);
+          }
 
           completed++;
           onProgress(completed, total);
@@ -128,7 +131,7 @@ const createZipStreamWithZipStreamLib = async (
 
     await writer.close();
   } catch (error) {
-    console.error("ZIP打包或下载失败:", error);
+    console.error("读取zip失败:", error);
     await writer.abort();
     throw error;
   }
