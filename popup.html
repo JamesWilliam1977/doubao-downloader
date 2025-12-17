@@ -73,22 +73,9 @@
         line-height: 1.7;
       }
 
-      .features {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin-bottom: 20px;
-      }
-
-      .feature-item {
-        display: flex;
-        align-items: center;
-        padding: 10px 12px;
-        background-color: #f5f7fa;
-        border-radius: 8px;
-        font-size: 13px;
-        color: #444;
-        gap: 8px;
+      .highlight-key {
+        color: #e74c3c;
+        font-weight: 600;
       }
 
       .footer {
@@ -131,23 +118,8 @@
       </div>
 
       <p class="description">
-        开源、免费、高效的浏览器扩展，支持一键批量去水印下载豆包AI生成图片。
+        <span class="highlight-key">开源</span>、<span class="highlight-key">免费</span>、<span class="highlight-key">高效</span>的浏览器扩展，支持一键无水印下载豆包AI生成图片、对话生成图片实时获取。
       </p>
-
-      <div class="features">
-        <div class="feature-item">
-          <span>源代码完全开源、隐私安全</span>
-        </div>
-        <div class="feature-item">
-          <span>一键批量下载所有无水印图片</span>
-        </div>
-        <div class="feature-item">
-          <span>对话实时获取无水印图片</span>
-        </div>
-        <div class="feature-item">
-          <span>下载记录使用indexdb缓存防止重复下载</span>
-        </div>
-      </div>
 
       <div class="footer">© 2025 Doubao Downloader</div>
     </div>
