@@ -29,9 +29,23 @@
 
 > `.crx` 文件暂时无法拖入安装，安装后可能无法正常使用。
 
-## 无水印视频下载
 
-详情见：[Issue #6](https://github.com/LauZzL/doubao-downloader/issues/6)
+
+## 常见问题
+
+### 1. 安装成功还是有水印？
+
+> 请先查看该issue：[“AI生成”字样能去除吗？ #7](https://github.com/LauZzL/doubao-downloader/issues/7)
+
+暂时不清楚为什么部分账号无法获取无水印图片，建议切换账号或环境使用。
+
+### 2. 图像生成的区域重绘、智能编辑、变清晰等功能无法获取无水印图片
+
+这几个功能不会返回无水印图片。
+
+### 3. 无水印视频可以下载吗
+
+插件不支持视频下载，但可以使用手机下载。详情见：[Issue #6](https://github.com/LauZzL/doubao-downloader/issues/6)
 
 ## 预览
 
