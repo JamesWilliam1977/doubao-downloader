@@ -62,6 +62,7 @@ declare global {
   const __BUILD_TIME__: string;
   interface Window {
     origin_parse: (data: string) => any;
+    origin_stringify: typeof JSON.stringify;
     ZIP: any;
   }
 }

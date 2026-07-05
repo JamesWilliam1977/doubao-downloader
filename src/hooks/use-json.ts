@@ -36,6 +36,19 @@ function showRawImage(image: any) {
   }
 }
 
+function updateVideoDuration(data: any) {
+  const chatAbility = data?.chat_ability;
+  if (chatAbility?.ability_type !== 17) return;
+
+  try {
+    const abilityParam = JSON.parse(chatAbility.ability_param || "{}");
+    abilityParam.duration = 15;
+    chatAbility.ability_param = JSON.stringify(abilityParam);
+  } catch (error) {
+    console.warn("修改视频生成时长失败:", error);
+  }
+}
+
 function extractCreations({
   creationsArray,
   baseInfo,
@@ -108,7 +121,13 @@ export function useJson({ showRaw = true, callback }: UseJsonProps) {
   const prevMessageIds = useRef<Set<string>>(new Set());
   useEffect(() => {
     const _parse = JSON.parse;
+    const _stringify = JSON.stringify;
     window.origin_parse = JSON.parse;
+    window.origin_stringify = JSON.stringify;
+    JSON.stringify = ((value: any, replacer?: any, space?: any) => {
+      updateVideoDuration(value);
+      return _stringify(value, replacer, space);
+    }) as typeof JSON.stringify;
     JSON.parse = function (text: string) {
       let jsonData = _parse(text);
       if (!text.includes("creations")) return jsonData;
@@ -168,6 +187,7 @@ export function useJson({ showRaw = true, callback }: UseJsonProps) {
     };
     return () => {
       JSON.parse = window.origin_parse;
+      JSON.stringify = window.origin_stringify;
     };
   }, [showRaw]);
 }
