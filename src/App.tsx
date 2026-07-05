@@ -79,9 +79,22 @@ function App() {
       });
   }, []);
 
+  const handleUpdateVideoDurationSuccess = useCallback(() => {
+    Toast.success("已将视频生成时长修改为15秒");
+  }, []);
+
+  const handleUpdateVideoDurationError = useCallback((error: unknown) => {
+    Toast.error("修改视频生成时长失败，请在控制台查看详细错误");
+    console.error("updateVideoDuration error:", error);
+  }, []);
+
   useJson({
     showRaw:
       setting.find((item: Setting) => item.key === "show_raw")?.value ?? false,
+    enable15sVideo:
+      setting.find((item: Setting) => item.key === "enable_15s_video")?.value ?? true,
+    onUpdateVideoDurationSuccess: handleUpdateVideoDurationSuccess,
+    onUpdateVideoDurationError: handleUpdateVideoDurationError,
     callback: (convMessages: ConvMessage[]) => {
       setConvMessageList((prev) => {
         const newConv = convMessages.filter(

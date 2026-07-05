@@ -50,6 +50,11 @@ export const SETTING_DEFAULTS: Setting[] = [
     value: false,
     label: "为会话创建文件夹",
   },
+  {
+    key: "enable_15s_video",
+    value: true,
+    label: "开启15秒视频",
+  },
 ];
 
 export class SettingService {
