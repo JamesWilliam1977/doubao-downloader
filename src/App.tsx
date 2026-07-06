@@ -167,11 +167,25 @@ function App() {
         "${conversation_id}_${message_id}_${index_in_conv}_${creation.image.key}";
       const createFolder =
         setting.find((item) => item.key === "create_folder")?.value || false;
+      const downloadByDisplayOrder =
+        setting.find((item) => item.key === "download_by_display_order")?.value || false;
 
       const validConvs = convMessages.filter(
         (conv): conv is ConvMessage & { creation: Creation } =>
           conv.creation != null,
       );
+
+      const displayOrderMap = new Map(
+        validConvs.map((conv, index) => [conv.creation.image.key, index + 1]),
+      );
+      const withDisplayOrder = (
+        filename: string,
+        conv: ConvMessage & { creation: Creation },
+      ) => {
+        if (!downloadByDisplayOrder) return filename;
+        const order = displayOrderMap.get(conv.creation.image.key);
+        return order ? `${order}-${filename}` : filename;
+      };
 
       const imageConvs = validConvs.filter(
         (conv) => conv.creation.creation_type === "image",
@@ -198,10 +212,13 @@ function App() {
           message_id: conv.message_id,
           key: conv.creation.image.key.replace(/\//g, "_"),
           url: conv.creation.image.image_ori_raw.url,
-          filename: completeSuffix(
-            replaceTemplate(customFilenameTemplate, conv),
-            "png",
-          ).replace(/\//g, "_"),
+          filename: withDisplayOrder(
+            completeSuffix(
+              replaceTemplate(customFilenameTemplate, conv),
+              "png",
+            ).replace(/\//g, "_"),
+            conv,
+          ),
           folder: createFolder ? conv.tts_content + "/" : "",
         }));
 
@@ -216,10 +233,13 @@ function App() {
               message_id: conv.message_id,
               key: conv.creation.image.key.replace(/\//g, "_"),
               url: videoUrl,
-              filename: completeSuffix(
-                replaceTemplate(customFilenameTemplate, conv),
-                "mp4",
-              ).replace(/\//g, "_"),
+              filename: withDisplayOrder(
+                completeSuffix(
+                  replaceTemplate(customFilenameTemplate, conv),
+                  "mp4",
+                ).replace(/\//g, "_"),
+                conv,
+              ),
               folder: createFolder ? conv.tts_content + "/" : "",
             });
           }

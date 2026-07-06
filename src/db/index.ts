@@ -55,6 +55,11 @@ export const SETTING_DEFAULTS: Setting[] = [
     value: true,
     label: "开启15秒视频",
   },
+  {
+    key: "download_by_display_order",
+    value: false,
+    label: "按展示顺序下载",
+  },
 ];
 
 export class SettingService {
