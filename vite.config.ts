@@ -15,10 +15,10 @@ export default defineConfig({
       entry: "src/main.tsx",
       userscript: {
         name: "豆包下载器",
-        description: "豆包AI生图去水印批量下载!",
+        description: "豆包AI/DolaAI生图去水印批量下载!",
         icon: "https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/chat/static/image/logo-icon-white-bg.72df0b1a.png",
         namespace: "npm/vite-plugin-monkey",
-        match: ["https://www.doubao.com/chat/*"],
+        match: ["https://www.doubao.com/chat/*", "https://www.dola.com/chat/*"],
       },
     }),
     viteStaticCopy({
