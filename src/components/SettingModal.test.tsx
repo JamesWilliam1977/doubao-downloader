@@ -49,7 +49,7 @@ describe("SettingModal", () => {
     expect(screen.getByText("下载行为")).toBeTruthy();
     expect(screen.getByText("文件与目录")).toBeTruthy();
     expect(screen.getByText("视频")).toBeTruthy();
-    expect(screen.getByText("关于")).toBeTruthy();
+    expect(screen.queryByText("关于")).toBeNull();
   });
 
   it("flushes text input changes before closing", () => {

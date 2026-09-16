@@ -22,36 +22,6 @@
 
 .dd-setting-tabs .semi-tabs-bar {
     flex: 0 0 126px;
-    gap: 2px;
-    padding: 6px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-}
-
-.dd-setting-tabs .semi-tabs-tab {
-    width: 100%;
-    min-height: 36px;
-    margin: 0;
-    padding: 8px 10px;
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 500;
-    text-align: left;
-    border: 0;
-    border-radius: 6px;
-    transition: background-color 160ms ease, color 160ms ease;
-}
-
-.dd-setting-tabs .semi-tabs-tab:hover {
-    color: #166534;
-    background: #ecfdf5;
-}
-
-.dd-setting-tabs .semi-tabs-tab-active,
-.dd-setting-tabs .semi-tabs-tab-active:hover {
-    color: #166534;
-    background: #dcfce7;
 }
 
 .dd-setting-tabs .semi-tabs-content {
@@ -76,13 +46,6 @@
     width: 116px;
 }
 
-.dd-setting-about {
-    padding: 14px 12px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-}
-
 @media (max-width: 560px) {
     .dd-setting-modal {
         min-width: 0;
@@ -99,11 +62,9 @@
         width: 100%;
         margin-bottom: 12px;
         overflow-x: auto;
-        border-radius: 8px;
     }
 
     .dd-setting-tabs .semi-tabs-tab {
-        width: auto;
         min-width: max-content;
         white-space: nowrap;
     }

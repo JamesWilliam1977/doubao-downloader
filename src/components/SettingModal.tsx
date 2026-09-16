@@ -81,7 +81,6 @@ function SettingModal({ isOpenSetting, onCloseSetting }: SettingModalProps) {
         <Tabs
           className="dd-setting-tabs"
           defaultActiveKey="download"
-          tabBarClassName="dd-setting-tabs-nav"
           tabPosition="left"
           type="button"
         >
@@ -151,15 +150,6 @@ function SettingModal({ isOpenSetting, onCloseSetting }: SettingModalProps) {
             </div>
           </TabPane>
 
-          <TabPane itemKey="about" tab="关于">
-            <div className="dd-setting-content dd-setting-about">
-              <div className="dd:text-sm dd:font-medium dd:text-slate-800">豆包下载器</div>
-              <div className="dd:mt-1 dd:text-xs dd:text-slate-400">版本 {__APP_VERSION__}</div>
-              <p className="dd:mb-0 dd:mt-4 dd:text-sm dd:leading-6 dd:text-slate-500">
-                管理图片和短视频的下载方式，让归档保持清晰有序。
-              </p>
-            </div>
-          </TabPane>
         </Tabs>
       </div>
     </Modal>
