@@ -52,7 +52,7 @@ export const SETTING_DEFAULTS: Setting[] = [
   },
   {
     key: "enable_15s_video",
-    value: true,
+    value: false,
     label: "开启15秒视频",
   },
   {

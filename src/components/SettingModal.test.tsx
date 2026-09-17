@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import { SettingContext } from "@/context/SettingContext";
+import { SETTING_DEFAULTS } from "@/db";
 import type { Setting } from "@/types";
 import SettingModal from "./SettingModal";
 
@@ -39,6 +40,10 @@ const settings: Setting[] = [
 ];
 
 describe("SettingModal", () => {
+  it("defaults 15-second video setting to off", () => {
+    expect(SETTING_DEFAULTS.find((item) => item.key === "enable_15s_video")?.value).toBe(false);
+  });
+
   it("groups settings into four tabs", () => {
     render(
       <SettingContext.Provider value={{ setting: settings, updateSetting: vi.fn() }}>
