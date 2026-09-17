@@ -92,7 +92,7 @@ function App() {
     showRaw:
       setting.find((item: Setting) => item.key === "show_raw")?.value ?? false,
     enable15sVideo:
-      setting.find((item: Setting) => item.key === "enable_15s_video")?.value ?? true,
+      setting.find((item: Setting) => item.key === "enable_15s_video")?.value ?? false,
     onUpdateVideoDurationSuccess: handleUpdateVideoDurationSuccess,
     onUpdateVideoDurationError: handleUpdateVideoDurationError,
     callback: (convMessages: ConvMessage[]) => {

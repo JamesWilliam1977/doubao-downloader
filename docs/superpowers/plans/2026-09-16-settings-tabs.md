@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 将设置弹窗改造成按下载、文件目录、视频、关于分类的 tabs 页面，同时保持现有设置读写和防抖提交行为。
+**Goal:** 将设置弹窗改造成按下载、文件目录、视频分类的 tabs 页面，同时保持现有设置读写和防抖提交行为。
 
 **Architecture:** 保留 `SettingModal` 作为状态编排层，新增本地 `SettingRow` 展示组件和分类配置，使用 Semi UI Tabs 承载内容。现有 `getSetting`、`changeSetting`、`useSetting` 和 `handleClose` 继续作为唯一数据更新路径；CSS 只补充弹窗内容的布局、导航和移动端规则。
 
@@ -13,7 +13,8 @@
 ## Global Constraints
 
 - 不修改 `SettingKey`、`SETTING_DEFAULTS`、Dexie schema 或 `SettingContext` 契约。
-- 四个 tabs 固定为：下载行为、文件与目录、视频、关于；默认打开下载行为。
+- 三个 tabs 固定为：下载行为、文件与目录、视频；默认打开下载行为。
+- Tabs 颜色和选中态使用 Semi Design 默认主题，不添加自定义颜色覆盖。
 - 文本模板和并发数输入在关闭弹窗时必须继续 flush。
 - 桌面端使用左侧导航视觉，窄屏自动转为顶部横向滚动 tabs。
 - 完成后必须运行 `pnpm build`。
@@ -57,9 +58,9 @@ function SettingRow({ label, description, control }: SettingRowProps) {
 }
 ```
 
-- [ ] **Step 3: 使用 `Tabs`/`TabPane` 建立四个分类并迁移现有控件**
+- [ ] **Step 3: 使用 `Tabs`/`TabPane` 建立三个分类并迁移现有控件**
 
-将设置项按 spec 分组：下载行为放 4 项，文件与目录放 2 项，视频放 1 项；关于 tab 显示 `__APP_VERSION__` 和静态说明。为所有 tab 内容添加 `dd:space-y-0` 容器，默认 key 为下载行为。
+将设置项按 spec 分组：下载行为放 4 项，文件与目录放 2 项，视频放 1 项。为所有 tab 内容添加 `dd:space-y-0` 容器，默认 key 为下载行为。
 
 - [ ] **Step 4: 保持关闭生命周期与输入控件行为不变**
 
@@ -94,9 +95,9 @@ git commit -m "feat: organize settings modal with tabs"
 
 在 `SettingModal.tsx` 的弹窗内容根节点加 `dd-setting-modal`，tabs 外层加 `dd-setting-tabs`，内容面板加 `dd-setting-content`，便于只作用于本弹窗。
 
-- [ ] **Step 2: 在 `src/index.css` 添加桌面端视觉规则**
+- [ ] **Step 2: 在 `src/index.css` 添加桌面端布局规则**
 
-为 tabs 导航设置浅灰背景、圆角、绿色 active 状态；内容区设置白色、内边距、最小高度；覆盖 Semi UI 默认面板 padding 时使用 `.dd-setting-tabs` 范围选择器，避免影响项目其它弹窗。
+只设置 tabs 导航的尺寸、间距和内容区 padding、最小高度；不覆盖 Semi UI 默认颜色或 active 状态，使用 `.dd-setting-tabs` 范围选择器避免影响项目其它弹窗。
 
 - [ ] **Step 3: 添加窄屏响应式规则**
 
@@ -130,7 +131,7 @@ git commit -m "style: refine tabbed settings layout"
 
 - [ ] **Step 2: 验证 tabs 与默认状态**
 
-确认首次打开默认显示“下载行为”；四个 tab 均可切换，关于页显示版本信息，切换不会清空输入。
+确认首次打开默认显示“下载行为”；三个 tab 均可切换，页面不显示关于 tab，切换不会清空输入。
 
 - [ ] **Step 3: 验证持久化与关闭 flush**
 
