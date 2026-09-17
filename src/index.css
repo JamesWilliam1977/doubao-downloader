@@ -46,6 +46,10 @@
     width: 116px;
 }
 
+.dd-setting-shortcut-input {
+    width: min(180px, 58vw);
+}
+
 @media (max-width: 560px) {
     .dd-setting-modal {
         min-width: 0;
@@ -82,7 +86,8 @@
     }
 
     .dd-setting-template-input,
-    .dd-setting-number-input {
+    .dd-setting-number-input,
+    .dd-setting-shortcut-input {
         width: min(100%, 320px);
     }
 }

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import logo from "../assets/logo.png";
 
-export const Indicator = (props: { onClick: () => void }) => {
+export const Indicator = (props: { onClick: () => void; hidden?: boolean }) => {
   const [position, setPosition] = useState<{
     top: string;
   }>({
@@ -21,6 +21,8 @@ export const Indicator = (props: { onClick: () => void }) => {
     localStorage.setItem("top", `${clientY}px`);
     setPosition({ top: `${clientY}px` });
   };
+
+  if (props.hidden) return null;
 
   return (
     <div

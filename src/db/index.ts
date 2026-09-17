@@ -60,6 +60,21 @@ export const SETTING_DEFAULTS: Setting[] = [
     value: false,
     label: "按展示顺序下载",
   },
+  {
+    key: "show_capture_notification",
+    value: true,
+    label: "显示捕获通知",
+  },
+  {
+    key: "hide_indicator",
+    value: false,
+    label: "隐藏指示器",
+  },
+  {
+    key: "panel_shortcut",
+    value: "Alt + D",
+    label: "面板快捷键",
+  },
 ];
 
 export class SettingService {

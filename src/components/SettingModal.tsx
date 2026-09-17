@@ -55,14 +55,19 @@ function SettingModal({ isOpenSetting, onCloseSetting }: SettingModalProps) {
   const createFolder = getSetting("create_folder");
   const enable15sVideo = getSetting("enable_15s_video");
   const downloadByDisplayOrder = getSetting("download_by_display_order");
+  const showCaptureNotification = getSetting("show_capture_notification");
+  const hideIndicator = getSetting("hide_indicator");
+  const panelShortcut = getSetting("panel_shortcut");
 
   const customFilenameTemplateLocal = useSetting(customFilenameTemplate, changeSetting);
   const downloadConcurrencyLocal = useSetting(downloadConcurrency, changeSetting);
+  const panelShortcutLocal = useSetting(panelShortcut, changeSetting);
 
 
   const handleClose = () => {
     customFilenameTemplateLocal.flush();
     downloadConcurrencyLocal.flush();
+    panelShortcutLocal.flush();
     onCloseSetting();
   };
 
@@ -146,6 +151,34 @@ function SettingModal({ isOpenSetting, onCloseSetting }: SettingModalProps) {
                 control={<Switch checked={enable15sVideo.value} onChange={(checked) => changeSetting(enable15sVideo, checked)} />}
                 description="在列表中识别并提供 15 秒视频下载"
                 label={enable15sVideo.label}
+              />
+            </div>
+          </TabPane>
+
+          <TabPane itemKey="general" tab="通用">
+            <div className="dd-setting-content">
+              <SettingRow
+                control={<Switch aria-label={showCaptureNotification.label} checked={showCaptureNotification.value} onChange={(checked) => changeSetting(showCaptureNotification, checked)} />}
+                description="捕获到新图片或视频时显示通知"
+                label={showCaptureNotification.label}
+              />
+              <SettingRow
+                control={<Switch aria-label={hideIndicator.label} checked={hideIndicator.value} onChange={(checked) => changeSetting(hideIndicator, checked)} />}
+                description="隐藏屏幕右侧的豆包头像指示器"
+                label={hideIndicator.label}
+              />
+              <SettingRow
+                control={
+                  <Input
+                    aria-label={panelShortcut.label}
+                    className="dd-setting-shortcut-input"
+                    placeholder="例如 Alt + D"
+                    value={panelShortcutLocal.value}
+                    onChange={panelShortcutLocal.onChange}
+                  />
+                }
+                description="使用 + 分隔修饰键和按键，留空则停用"
+                label={panelShortcut.label}
               />
             </div>
           </TabPane>

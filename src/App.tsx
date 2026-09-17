@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Indicator } from "./components/Indicator";
 import MainPanel from "./components/MainPanel/MainPanel";
 import { useJson } from "./hooks/use-json";
-import { ConvFilter, ConvMessage, Creation, Setting } from "./types";
+import { ConvFilter, ConvMessage, Creation, Setting, SettingKey } from "./types";
 import { ConvContext } from "./context/ConvContext";
 import { ConvFilterContext } from "./context/ConvFilterContext";
 import { useDownload } from "./hooks/use-download";
@@ -14,6 +14,11 @@ import { SettingContext } from "./context/SettingContext";
 import { useLiveQuery } from "dexie-react-hooks";
 import { completeSuffix, replaceTemplate } from "./utils/common";
 import { getVideoUrl } from "@/api/video";
+import { matchesShortcut } from "@/utils/shortcut";
+
+function settingValue<T>(settings: Setting[], key: SettingKey, fallback: T): T {
+  return (settings.find((item) => item.key === key)?.value as T | undefined) ?? fallback;
+}
 
 function App() {
   const [isOpenMainPanel, setIsOpenMainPanel] = useState(false);
@@ -25,6 +30,13 @@ function App() {
     currentPage: 1,
     pageSize: 12,
   });
+  const setting =
+    useLiveQuery(() => db.setting.toArray(), []) || ([] as Setting[]);
+  const showCaptureNotification = settingValue(setting, "show_capture_notification", true);
+  const hideIndicator = settingValue(setting, "hide_indicator", false);
+  const panelShortcut = settingValue(setting, "panel_shortcut", "Alt + D");
+  const showCaptureNotificationRef = useRef(showCaptureNotification);
+  showCaptureNotificationRef.current = showCaptureNotification;
 
   const { Text } = Typography;
 
@@ -63,10 +75,18 @@ function App() {
     })
   }, []);
 
-  const { download, progress, isDownloading } = useDownload();
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (matchesShortcut(event, panelShortcut)) {
+        event.preventDefault();
+        setIsOpenMainPanel((isOpen) => !isOpen);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [panelShortcut]);
 
-  const setting =
-    useLiveQuery(() => db.setting.toArray(), []) || ([] as Setting[]);
+  const { download, progress, isDownloading } = useDownload();
 
   const updateSetting = useCallback((item: Setting) => {
     db.setting
@@ -114,26 +134,28 @@ function App() {
         ).length;
         if (newImageCount === 0 && newVideoCount === 0) return prev;
         const content = `捕获到: ${newImageCount > 0 ? '图片[' + newImageCount + ']张' : ''} ${newVideoCount > 0 ? '视频[' + newVideoCount + ']个' : ''}`;
-        Notification.info({
-          title: "豆包下载器",
-          content: (
-            <>
-              <div>
-                {
-                  content
-                }
-                <Typography.Text link onClick={() => handleDownload(newConv)}>
-                  点击此处一键下载
-                </Typography.Text>
-                。<br />
-                你也可以点击屏幕右侧豆包头像打开面板查看！
-              </div>
-            </>
-          ),
-          duration: 10,
-          showClose: true,
-          position: "bottomRight",
-        });
+        if (showCaptureNotificationRef.current) {
+          Notification.info({
+            title: "豆包下载器",
+            content: (
+              <>
+                <div>
+                  {
+                    content
+                  }
+                  <Typography.Text link onClick={() => handleDownload(newConv)}>
+                    点击此处一键下载
+                  </Typography.Text>
+                  。<br />
+                  你也可以点击屏幕右侧豆包头像打开面板查看！
+                </div>
+              </>
+            ),
+            duration: 10,
+            showClose: true,
+            position: "bottomRight",
+          });
+        }
         return [...prev, ...newConv];
       });
     },
@@ -331,7 +353,7 @@ function App() {
       id="doubao-downloader"
       className="dd:bg-background dd:text-foreground dd:h-0"
     >
-      <Indicator onClick={() => setIsOpenMainPanel(!isOpenMainPanel)} />
+      <Indicator hidden={hideIndicator} onClick={() => setIsOpenMainPanel(!isOpenMainPanel)} />
       <ProgressModal isDownloading={isDownloading} progress={progress} />
       <SettingContext.Provider
         value={{

@@ -18,7 +18,9 @@ vi.mock("@douyinfe/semi-ui-19", () => ({
         {children}
       </div>
     ) : null,
-  Switch: ({ checked }: { checked?: boolean }) => <input checked={checked} readOnly type="checkbox" />,
+  Switch: ({ checked, onChange, "aria-label": ariaLabel }: { checked?: boolean; onChange?: (checked: boolean) => void; "aria-label"?: string }) => (
+    <input aria-label={ariaLabel} checked={checked} onChange={(event) => onChange?.(event.target.checked)} type="checkbox" />
+  ),
   Tabs: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   TabPane: ({ children, tab }: { children: ReactNode; tab: ReactNode }) => (
     <section>
@@ -37,6 +39,9 @@ const settings: Setting[] = [
   { key: "create_folder", value: false, label: "为会话创建文件夹" },
   { key: "enable_15s_video", value: true, label: "开启15秒视频" },
   { key: "download_by_display_order", value: false, label: "按展示顺序下载" },
+  { key: "show_capture_notification", value: true, label: "显示捕获通知" },
+  { key: "hide_indicator", value: false, label: "隐藏指示器" },
+  { key: "panel_shortcut", value: "Alt + D", label: "面板快捷键" },
 ];
 
 describe("SettingModal", () => {
@@ -54,7 +59,47 @@ describe("SettingModal", () => {
     expect(screen.getByText("下载行为")).toBeTruthy();
     expect(screen.getByText("文件与目录")).toBeTruthy();
     expect(screen.getByText("视频")).toBeTruthy();
+    expect(screen.getByText("通用")).toBeTruthy();
     expect(screen.queryByText("关于")).toBeNull();
+  });
+
+  it("provides defaults for general settings", () => {
+    expect(SETTING_DEFAULTS.find((item) => item.key === "show_capture_notification")?.value).toBe(true);
+    expect(SETTING_DEFAULTS.find((item) => item.key === "hide_indicator")?.value).toBe(false);
+    expect(SETTING_DEFAULTS.find((item) => item.key === "panel_shortcut")?.value).toBe("Alt + D");
+  });
+
+  it("flushes the custom panel shortcut before closing", () => {
+    const updateSetting = vi.fn();
+
+    render(
+      <SettingContext.Provider value={{ setting: settings, updateSetting }}>
+        <SettingModal isOpenSetting onCloseSetting={vi.fn()} />
+      </SettingContext.Provider>,
+    );
+
+    fireEvent.change(screen.getByDisplayValue("Alt + D"), { target: { value: "Ctrl + Shift + D" } });
+    fireEvent.click(screen.getByRole("button", { name: "关闭设置" }));
+
+    expect(updateSetting).toHaveBeenCalledWith(
+      expect.objectContaining({ key: "panel_shortcut", value: "Ctrl + Shift + D" }),
+    );
+  });
+
+  it("updates the capture notification setting immediately", () => {
+    const updateSetting = vi.fn();
+
+    render(
+      <SettingContext.Provider value={{ setting: settings, updateSetting }}>
+        <SettingModal isOpenSetting onCloseSetting={vi.fn()} />
+      </SettingContext.Provider>,
+    );
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "显示捕获通知" }));
+
+    expect(updateSetting).toHaveBeenCalledWith(
+      expect.objectContaining({ key: "show_capture_notification", value: false }),
+    );
   });
 
   it("flushes text input changes before closing", () => {
